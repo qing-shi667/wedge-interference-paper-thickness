@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f7f5">
-  <meta name="description" content="用劈尖干涉测量擦镜纸厚度：录入条纹间距和劈尖长度，计算三张纸总厚度及单张厚度。">
+  <meta name="description" content="劈尖干涉测量擦镜纸厚度的实验原理与计算示例。">
   <title>用劈尖干涉测量擦镜纸厚度</title>
   <style>
     :root { font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; color: #1e2929; background: #f6f7f5; }
@@ -17,6 +17,10 @@
     h1 { margin: 0; font-size: 27px; line-height: 1.35; font-weight: 700; }
     .subtitle { margin: 6px 0 0; color: #677270; font-size: 14px; }
     main { padding: 28px 0 60px; }
+    .principle { max-width: 900px; margin-bottom: 30px; }
+    .principle h2 { margin-bottom: 14px; }
+    .principle p { margin: 0 0 12px; line-height: 1.9; text-indent: 2em; }
+    .principle .equation-line { margin: 4px 0 14px; text-align: center; text-indent: 0; }
     .intro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
     .metric { padding: 15px 18px; border: 1px solid #dce2df; background: #fff; border-radius: 6px; }
     .metric-label { display: block; margin-bottom: 5px; color: #62706e; font-size: 13px; }
@@ -46,8 +50,9 @@
     .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
     .summary .metric { border-top: 3px solid #268574; }
     .formula { margin-top: 27px; padding-top: 22px; border-top: 1px solid #dce2df; }
-    .formula p { margin: 10px 0 0; line-height: 1.8; color: #4f5b58; }
+    .formula p { margin: 10px 0 0; line-height: 1.8; color: #4f5b58; text-indent: 2em; }
     .equation { display: inline-block; font-family: Cambria, "Times New Roman", serif; font-size: 19px; color: #173f3b; white-space: nowrap; }
+    .principle .equation, .formula .equation { white-space: normal; }
     .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; }
     .fraction span:first-child { padding: 0 5px 2px; border-bottom: 1px solid currentColor; }
     .fraction span:last-child { padding-top: 2px; }
@@ -66,9 +71,18 @@
 <body>
   <header><div class="wrap">
     <h1>用劈尖干涉测量擦镜纸厚度</h1>
-    <p class="subtitle">原始数据录入与单张厚度计算</p>
+    <p class="subtitle">实验原理与单张厚度计算</p>
   </div></header>
   <main class="wrap">
+    <section class="principle" aria-labelledby="principle-title">
+      <h2 id="principle-title">实验原理</h2>
+      <p>两块光学平板玻璃一端紧密贴合，形成棱边；另一端放入折成三折的一张擦镜纸，两块玻璃之间形成一层楔形空气薄膜。</p>
+      <p>单色钠光垂直入射时，一部分光在空气薄膜的上表面（玻璃→空气界面）反射，另一部分光透射进入空气层后，在下表面（空气→玻璃界面）反射。两束反射光频率相同、振动方向一致，可以发生薄膜等厚干涉。下表面的反射产生半波损失，因此两束反射光的光程差为：</p>
+      <p class="equation-line"><span class="equation">Δ = 2d + <span class="fraction"><span>λ</span><span>2</span></span></span></p>
+      <p>其中，d 是该处的空气膜厚度。暗纹满足 <span class="equation">2d = kλ</span>（k = 0, 1, 2, …）。相邻两条暗纹对应的空气膜厚度差为 <span class="equation">Δd = λ/2</span>。</p>
+      <p>设相邻暗纹间距为 b、劈尖角为 θ。由于 θ 很小，<span class="equation">tan θ ≈ θ = <span class="fraction"><span>Δd</span><span>b</span></span> = <span class="fraction"><span>λ</span><span>2b</span></span></span>。若棱边至擦镜纸一侧边缘的距离为 L、三折擦镜纸总厚度为 D<sub>总</sub>，则 <span class="equation">tan θ = D<sub>总</sub>/L</span>。</p>
+      <p>联立两式，得到 <span class="equation">D<sub>总</sub> = λL/(2b)</span>。纸折成三层，因此单张擦镜纸厚度为 <span class="equation">D<sub>测</sub> = D<sub>总</sub>/3 = λL/(6b)</span>。对多组 b、L 分别计算后取算术平均值。</p>
+    </section>
     <div class="intro" aria-label="实验常量">
       <div class="metric"><span class="metric-label">理论厚度 D<sub>理</sub></span><span class="metric-value">0.020 <small>mm / 张</small></span></div>
       <div class="metric"><span class="metric-label">光源波长 λ</span><span class="metric-value">589.3 <small>nm</small></span></div>
@@ -76,7 +90,7 @@
     </div>
 
     <section aria-labelledby="data-title">
-      <div class="section-head"><h2 id="data-title">测量数据</h2><button class="reset" id="reset" type="button" aria-label="恢复原始数据" title="恢复原始数据"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+      <div class="section-head"><h2 id="data-title">演示数据</h2><button class="reset" id="reset" type="button" aria-label="恢复演示数据" title="恢复演示数据"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
       <div class="table-scroll">
         <table aria-label="劈尖干涉测量数据和计算结果">
           <thead><tr><th scope="col">测量次数</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th></tr></thead>
@@ -88,7 +102,7 @@
           </tbody>
         </table>
       </div>
-      <p class="table-note">表格可横向滚动。修改 b 或 L 后，结果会立即更新。</p>
+      <p class="table-note">表格可横向滚动；修改 b 或 L 后，结果会立即更新。</p>
       <p class="warning" id="warning" role="status" aria-live="polite"></p>
     </section>
 
@@ -105,8 +119,8 @@
     </section>
   </main>
   <script>
-    const originalB = [0.1805, 0.1792, 0.1842, 0.1796, 0.1839, 0.1791, 0.1836, 0.1800, 0.1840, 0.1805];
-    const originalL = [42.00, 42.01, 42.03, 42.07, 42.01, 41.91, 41.99, 42.02, 42.02, 41.96];
+    const exampleB = [0.1970, 0.1957, 0.2007, 0.1961, 0.2004, 0.1956, 0.2001, 0.1965, 0.2005, 0.1970];
+    const exampleL = [42.00, 42.01, 42.03, 42.07, 42.01, 41.91, 41.99, 42.02, 42.02, 41.96];
     const wavelengthMm = 0.0005893;
     const theoreticalMm = 0.020;
     const sheetCount = 3;
@@ -130,15 +144,15 @@
       return input;
     }
 
-    const bInputs = originalB.map((value, index) => addInput(bRow, value, 4, '条纹间距', index));
-    const lInputs = originalL.map((value, index) => addInput(lRow, value, 2, '劈尖长度', index));
-    const totalCells = originalB.map(() => { const cell = document.createElement('td'); totalRow.append(cell); return cell; });
-    const singleCells = originalB.map(() => { const cell = document.createElement('td'); singleRow.append(cell); return cell; });
+    const bInputs = exampleB.map((value, index) => addInput(bRow, value, 4, '条纹间距', index));
+    const lInputs = exampleL.map((value, index) => addInput(lRow, value, 2, '劈尖长度', index));
+    const totalCells = exampleB.map(() => { const cell = document.createElement('td'); totalRow.append(cell); return cell; });
+    const singleCells = exampleB.map(() => { const cell = document.createElement('td'); singleRow.append(cell); return cell; });
 
     function calculate() {
       const thicknesses = [];
       let invalid = false;
-      for (let i = 0; i < originalB.length; i++) {
+      for (let i = 0; i < exampleB.length; i++) {
         const b = Number(bInputs[i].value);
         const length = Number(lInputs[i].value);
         const bValid = bInputs[i].value.trim() !== '' && Number.isFinite(b) && b > 0;
@@ -165,8 +179,8 @@
     }
 
     document.querySelector('#reset').addEventListener('click', () => {
-      bInputs.forEach((input, index) => { input.value = originalB[index].toFixed(4); });
-      lInputs.forEach((input, index) => { input.value = originalL[index].toFixed(2); });
+      bInputs.forEach((input, index) => { input.value = exampleB[index].toFixed(4); });
+      lInputs.forEach((input, index) => { input.value = exampleL[index].toFixed(2); });
       calculate();
     });
     calculate();
