@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f5">
+  <meta name="description" content="用劈尖干涉测量擦镜纸厚度：录入条纹间距和劈尖长度，计算三张纸总厚度及单张厚度。">
+  <title>用劈尖干涉测量擦镜纸厚度</title>
+  <style>
+    :root { font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; color: #1e2929; background: #f6f7f5; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    .wrap { width: min(1200px, calc(100% - 40px)); margin-inline: auto; }
+    header { background: #fff; border-bottom: 1px solid #dce2df; }
+    header .wrap { padding: 24px 0 21px; }
+    h1 { margin: 0; font-size: 27px; line-height: 1.35; font-weight: 700; }
+    .subtitle { margin: 6px 0 0; color: #677270; font-size: 14px; }
+    main { padding: 28px 0 60px; }
+    .intro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+    .metric { padding: 15px 18px; border: 1px solid #dce2df; background: #fff; border-radius: 6px; }
+    .metric-label { display: block; margin-bottom: 5px; color: #62706e; font-size: 13px; }
+    .metric-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .metric-value small { font-size: 14px; font-weight: 500; color: #62706e; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    h2 { margin: 0; font-size: 19px; }
+    .reset { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; color: #315b58; background: #fff; border: 1px solid #c9d6d2; border-radius: 5px; cursor: pointer; }
+    .reset:hover, .reset:focus-visible { background: #eaf3f0; }
+    .reset svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .table-scroll { overflow-x: auto; border: 1px solid #d3dcd8; border-radius: 6px; background: #fff; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; table-layout: fixed; text-align: center; font-variant-numeric: tabular-nums; }
+    th, td { padding: 14px 7px; border-right: 1px solid #e2e7e4; border-bottom: 1px solid #e2e7e4; }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+    thead th { background: #edf3f0; color: #36544d; font-size: 14px; font-weight: 600; }
+    tbody th { width: 142px; text-align: left; padding-left: 16px; font-size: 14px; background: #fbfcfb; }
+    thead th:first-child { width: 142px; }
+    .unit { font-weight: 400; color: #6e7976; }
+    td { font-size: 14px; }
+    td input { width: 100%; min-width: 0; padding: 8px 3px; text-align: center; color: #1d2928; border: 1px solid #d1dbd7; border-radius: 4px; background: #fff; outline: none; }
+    td input:focus { border-color: #138272; box-shadow: 0 0 0 2px #d9eee8; }
+    td input.invalid { border-color: #b54336; background: #fff4f2; }
+    .result-row { background: #f4faf7; }
+    .result-row strong { color: #166754; }
+    .table-note { margin: 9px 0 0; color: #63706d; font-size: 12px; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
+    .summary .metric { border-top: 3px solid #268574; }
+    .formula { margin-top: 27px; padding-top: 22px; border-top: 1px solid #dce2df; }
+    .formula p { margin: 10px 0 0; line-height: 1.8; color: #4f5b58; }
+    .equation { display: inline-block; font-family: Cambria, "Times New Roman", serif; font-size: 19px; color: #173f3b; white-space: nowrap; }
+    .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; }
+    .fraction span:first-child { padding: 0 5px 2px; border-bottom: 1px solid currentColor; }
+    .fraction span:last-child { padding-top: 2px; }
+    .warning { min-height: 21px; margin: 10px 0 0; color: #a33c30; font-size: 13px; }
+    @media (max-width: 650px) {
+      .wrap { width: calc(100% - 28px); }
+      header .wrap { padding: 20px 0; }
+      h1 { font-size: 22px; }
+      .intro, .summary { grid-template-columns: 1fr; gap: 8px; }
+      .metric { padding: 12px 14px; }
+      .metric-value { font-size: 20px; }
+      main { padding-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header><div class="wrap">
+    <h1>用劈尖干涉测量擦镜纸厚度</h1>
+    <p class="subtitle">原始数据录入与单张厚度计算</p>
+  </div></header>
+  <main class="wrap">
+    <div class="intro" aria-label="实验常量">
+      <div class="metric"><span class="metric-label">理论厚度 D<sub>理</sub></span><span class="metric-value">0.020 <small>mm / 张</small></span></div>
+      <div class="metric"><span class="metric-label">光源波长 λ</span><span class="metric-value">589.3 <small>nm</small></span></div>
+      <div class="metric"><span class="metric-label">测量时夹入</span><span class="metric-value">3 <small>张擦镜纸</small></span></div>
+    </div>
+
+    <section aria-labelledby="data-title">
+      <div class="section-head"><h2 id="data-title">测量数据</h2><button class="reset" id="reset" type="button" aria-label="恢复原始数据" title="恢复原始数据"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+      <div class="table-scroll">
+        <table aria-label="劈尖干涉测量数据和计算结果">
+          <thead><tr><th scope="col">测量次数</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th></tr></thead>
+          <tbody>
+            <tr id="b-row"><th scope="row">条纹间距 b <span class="unit">/ mm</span></th></tr>
+            <tr id="l-row"><th scope="row">劈尖长度 L <span class="unit">/ mm</span></th></tr>
+            <tr id="total-row"><th scope="row">三张总厚度 <span class="unit">/ mm</span></th></tr>
+            <tr id="single-row" class="result-row"><th scope="row">单张 D<sub>测</sub> <span class="unit">/ mm</span></th></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">表格可横向滚动。修改 b 或 L 后，结果会立即更新。</p>
+      <p class="warning" id="warning" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="summary" aria-label="统计结果">
+      <div class="metric"><span class="metric-label">平均单张厚度</span><span class="metric-value" id="average">—</span></div>
+      <div class="metric"><span class="metric-label">与理论值之差</span><span class="metric-value" id="difference">—</span></div>
+      <div class="metric"><span class="metric-label">相对误差</span><span class="metric-value" id="relative-error">—</span></div>
+    </section>
+
+    <section class="formula" aria-labelledby="formula-title">
+      <h2 id="formula-title">计算方法</h2>
+      <p><span class="equation">D<sub>总</sub> = <span class="fraction"><span>Lλ</span><span>2b</span></span>，D<sub>测</sub> = <span class="fraction"><span>D<sub>总</sub></span><span>3</span></span> = <span class="fraction"><span>Lλ</span><span>6b</span></span></span></p>
+      <p>计算时将 λ = 589.3 nm 换算为 0.0005893 mm。每组结果先求三张擦镜纸的总厚度，再除以 3；统计值取有效测量组的算术平均。</p>
+    </section>
+  </main>
+  <script>
+    const originalB = [0.1805, 0.1792, 0.1842, 0.1796, 0.1839, 0.1791, 0.1836, 0.1800, 0.1840, 0.1805];
+    const originalL = [42.00, 42.01, 42.03, 42.07, 42.01, 41.91, 41.99, 42.02, 42.02, 41.96];
+    const wavelengthMm = 0.0005893;
+    const theoreticalMm = 0.020;
+    const sheetCount = 3;
+    const bRow = document.querySelector('#b-row');
+    const lRow = document.querySelector('#l-row');
+    const totalRow = document.querySelector('#total-row');
+    const singleRow = document.querySelector('#single-row');
+
+    function addInput(row, value, digits, quantity, index) {
+      const cell = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.inputMode = 'decimal';
+      input.step = 'any';
+      input.min = '0';
+      input.value = value.toFixed(digits);
+      input.setAttribute('aria-label', `第 ${index + 1} 次 ${quantity}，单位毫米`);
+      input.addEventListener('input', calculate);
+      cell.append(input);
+      row.append(cell);
+      return input;
+    }
+
+    const bInputs = originalB.map((value, index) => addInput(bRow, value, 4, '条纹间距', index));
+    const lInputs = originalL.map((value, index) => addInput(lRow, value, 2, '劈尖长度', index));
+    const totalCells = originalB.map(() => { const cell = document.createElement('td'); totalRow.append(cell); return cell; });
+    const singleCells = originalB.map(() => { const cell = document.createElement('td'); singleRow.append(cell); return cell; });
+
+    function calculate() {
+      const thicknesses = [];
+      let invalid = false;
+      for (let i = 0; i < originalB.length; i++) {
+        const b = Number(bInputs[i].value);
+        const length = Number(lInputs[i].value);
+        const bValid = bInputs[i].value.trim() !== '' && Number.isFinite(b) && b > 0;
+        const lValid = lInputs[i].value.trim() !== '' && Number.isFinite(length) && length > 0;
+        bInputs[i].classList.toggle('invalid', !bValid);
+        lInputs[i].classList.toggle('invalid', !lValid);
+        if (!bValid || !lValid) {
+          totalCells[i].textContent = '—';
+          singleCells[i].textContent = '—';
+          invalid = true;
+          continue;
+        }
+        const total = length * wavelengthMm / (2 * b);
+        const single = total / sheetCount;
+        totalCells[i].textContent = total.toFixed(5);
+        singleCells[i].innerHTML = `<strong>${single.toFixed(5)}</strong>`;
+        thicknesses.push(single);
+      }
+      const average = thicknesses.length ? thicknesses.reduce((sum, value) => sum + value, 0) / thicknesses.length : NaN;
+      document.querySelector('#average').textContent = Number.isFinite(average) ? `${average.toFixed(5)} mm` : '—';
+      document.querySelector('#difference').textContent = Number.isFinite(average) ? `${(average - theoreticalMm >= 0 ? '+' : '') + (average - theoreticalMm).toFixed(5)} mm` : '—';
+      document.querySelector('#relative-error').textContent = Number.isFinite(average) ? `${(Math.abs(average - theoreticalMm) / theoreticalMm * 100).toFixed(2)}%` : '—';
+      document.querySelector('#warning').textContent = invalid ? `请填写大于 0 的 b 和 L；当前按 ${thicknesses.length} 组有效数据计算平均值。` : '';
+    }
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      bInputs.forEach((input, index) => { input.value = originalB[index].toFixed(4); });
+      lInputs.forEach((input, index) => { input.value = originalL[index].toFixed(2); });
+      calculate();
+    });
+    calculate();
+  </script>
+</body>
+</html>
